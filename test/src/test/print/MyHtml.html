@@ -1,0 +1,22 @@
+<style>     
+@media print {   
+.noprint {    
+display: none    
+}   
+}   
+</style>  
+ 
+
+这里是打需要打印的内容.<span class="noprint">我只显示不打印哦，很神奇吧。哈哈</span>  
+<div class="noprint" >  
+<table style="margin:0 auto;width:500px;">  
+    <tr align="center" ><td>  
+      <object id="WebBrowser" classid="CLSID:8856F961-340A-11D0-A96B-00C04FD705A2" height="0"  
+                    width="0">  
+      </object>  
+  <input type="button" value="打印" onclick="document.all.WebBrowser.ExecWB(6,1)">  
+  <input type="button" value="页面设置" onclick="document.all.WebBrowser.ExecWB(8,1)">  
+<input type="button" value="直接打印" onclick="document.all.WebBrowser.ExecWB(6,6)">  
+  <input type="button" value="打印预览" onclick="document.all.WebBrowser.ExecWB(7,1)">  
+    </td></tr>  
+</table></div>  

@@ -1,0 +1,223 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<title>无标题文档</title>
+
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&amp;ak=XrGoRQpZsp2MtjjDWCrPop3Y9Ma3th4i"></script>
+
+<link rel="stylesheet" type="text/css" href="bootstrap.min.css" />
+
+<script type="text/javascript" src="angular.js"></script>
+
+</head>
+
+
+
+<body ng-app="appTest">
+
+	<div ng-controller="testCtr">
+
+		<input ng-model="ccity" />
+		<button ng-click="area()">确定</button>
+
+		<bane-baidu-map map-style="stt" map-options="ops" city="city"
+			longitude="longitude1" latitude="latitude1"></bane-baidu-map>
+
+		<input type="text" ng-model="longitude1" />
+		
+		<button ng-click="ck()">改变</button>
+
+		{{longitude1}},{{latitude1}}
+
+	</div>
+
+</body>
+
+</html>
+
+<script>
+	angular.module("appTest", [ "bane.baiduMap" ]).controller('testCtr', function($scope, $http) {
+
+		$scope.ck = function() {
+
+			$scope.longitude1 = 1;
+
+		}
+
+		$scope.stt = {
+			"width" : "500px",
+			"height" : "500px"
+		};
+
+		$scope.city = null;
+
+		$scope.ops = {};
+
+		$scope.longitude1;
+
+		$scope.latitude1 = null;
+
+		$scope.ccity = "上海";
+
+		$scope.area = function() {
+
+			$scope.city = $scope.ccity;
+
+		}
+
+	});
+	
+	
+
+	angular	.module("bane.baiduMap", []).directive(	'baneBaiduMap',	function() {
+
+						var defaultOps = {
+
+							"level" : 11,
+
+							"scroll" : true,
+
+							"showControl" : true,
+
+							"zoomControl" : true
+
+						};
+
+						function checkNull(obj) {
+
+							return obj === null || obj === undefined;
+
+						}
+
+						return {
+
+							restrict : 'EA',
+
+							transclude : true,
+
+							replace : false,
+
+							template : '<div ng-style="mapStyle"></div>',
+
+							scope : {
+
+								mapStyle : '=?',
+
+								longitude : '=?',
+
+								latitude : '=?',
+
+								city : '=?',
+
+								mapOptions : '=?',
+
+							},
+
+							link : function(scope, element, attrs, controller) {
+
+								var ops = {};
+
+								if (scope.mapOptions) {
+
+									ops.level = checkNull(scope.mapOptions.level) ? defaultOps.level
+											: scope.mapOptions.level;
+
+									ops.showControl = checkNull(scope.mapOptions.showControl) ? defaultOps.showControl
+											: scope.mapOptions.showControl;
+
+									ops.zoomControl = checkNull(scope.mapOptions.zoomControl) ? defaultOps.zoomControl
+											: scope.mapOptions.zoomControl;
+
+								} else {
+
+									ops = defaultOps;
+
+								}
+
+								var longitude = scope.longitude ? scope.longitude
+										: 121.487899;
+
+								var latitude = scope.latitude ? scope.latitude
+										: 31.249162;
+	 									
+								var city = scope.city;
+
+								scope.map = new BMap.Map(element.find('div')[0]);
+
+								scope.map.centerAndZoom(new BMap.Point(
+										longitude, latitude), ops.level);
+
+								if (ops.showControl) {
+
+									scope.map
+											.addControl(new BMap.MapTypeControl());
+
+								}
+
+								//scope.map.setCurrentCity(city); 
+
+								scope.map.enableScrollWheelZoom(ops.scroll);
+
+								if (ops.zoomControl) {
+
+									scope.map.addControl(new BMap.NavigationControl());
+
+								}
+
+								scope.myGeo = new BMap.Geocoder();
+
+								scope.map.addEventListener("click",
+										function(e) {
+
+											if (scope.maker) {
+
+												scope.maker.hide();
+
+											}
+
+											scope.maker = new BMap.Marker(
+													new BMap.Point(e.point.lng,
+															e.point.lat));
+
+											scope.map.addOverlay(scope.maker);
+
+											scope.$apply(function() {
+
+												scope.longitude = e.point.lng;
+
+												scope.latitude = e.point.lat;
+
+											});
+
+										});
+
+			scope.$watch('city',function() {
+								//map.centerAndZoom(scope.city,ops.level); 
+								scope.myGeo.getPoint(scope.city,
+												function(point) {
+													if (point) {
+														scope.map.centerAndZoom(point,15);
+														scope.map.addOverlay(new BMap.Marker(point));
+														scope.$apply(function() {
+																	scope.longitude = point.lng;
+																	scope.latitude = point.lat;
+
+																});
+
+													}
+
+												})
+
+							});
+
+							}
+
+						}
+
+					});
+</script>
