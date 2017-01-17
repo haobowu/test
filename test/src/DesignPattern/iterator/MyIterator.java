@@ -44,7 +44,6 @@ public class MyIterator implements Iterator {
         Iterator it = collection.iterator();  
         while (it.hasNext()) {
 			System.out.print(it.next());
-			
 		}
 	}
 
